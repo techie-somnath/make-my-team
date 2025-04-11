@@ -47,3 +47,4 @@ export default function RootLayout({
 
 
 import './globals.css'
+import Navbar from "@/components/navbar"

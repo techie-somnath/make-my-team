@@ -19,6 +19,7 @@ import {
   mockSkills,
   mockAvailability,
 } from "@/lib/team-data"
+import Navbar from "@/components/navbar"
 
 export default function Teams() {
   const [requirement, setRequirement] = useState("")
@@ -149,15 +150,10 @@ export default function Teams() {
   return (
     <main className="min-h-screen">
       <div className="absolute top-4 right-4">
-        <ThemeToggle />
+        <Navbar />
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <Button variant="ghost" className="mb-6 flex items-center" onClick={() => router.push("/")}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Search
-        </Button>
-
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-app-heading">Recommended Teams</h1>
           <Link href="/history">
