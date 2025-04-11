@@ -1,134 +1,101 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { useRef } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation"
-import { Mic, MicOff, Search } from "lucide-react"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { motion,useInView } from "framer-motion";
+import { 
+  ArrowRight,
+  Star,
+  ChevronRight,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+// Ensure the correct path to the ParticleCanvas component
+import { ParticleCanvas } from "../components/particle-canvas";
+import AnimatedText from "@/components/animated-text";
+import AnimatedButton from "@/components/animated-button";
 
 export default function Home() {
-  const [requirement, setRequirement] = useState("")
-  const [isListening, setIsListening] = useState(false)
-  const [recognition, setRecognition] = useState<any | null>(null)
-  const router = useRouter()
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  // Initialize speech recognition
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+  const router = useRouter();
+  const heroRef = useRef(null);
+  const heroInView = useInView(heroRef, { once: true });
 
-      if (SpeechRecognition) {
-        try {
-          const recognitionInstance = new SpeechRecognition()
-          recognitionInstance.continuous = true
-          recognitionInstance.interimResults = true
-
-          recognitionInstance.onresult = (event) => {
-            let currentTranscript = ""
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-              if (event.results[i].isFinal) {
-                currentTranscript += event.results[i][0].transcript + " "
-              }
-            }
-            setRequirement(currentTranscript)
-          }
-
-          recognitionInstance.onerror = (event) => {
-            console.error("Speech recognition error", event.error)
-            setIsListening(false)
-          }
-
-          recognitionInstance.onend = () => {
-            setIsListening(false)
-          }
-
-          setRecognition(recognitionInstance)
-        } catch (error) {
-          console.error("Error initializing speech recognition:", error)
-        }
-      } else {
-        console.warn("Speech recognition not supported in this browser")
-      }
-    }
-  }, [])
-
-  const toggleListening = () => {
-    if (!recognition) return
-
-    if (isListening) {
-      recognition.stop()
-      setIsListening(false)
-    } else {
-      try {
-        recognition.start()
-        setIsListening(true)
-      } catch (error) {
-        console.error("Error starting recognition", error)
-      }
-    }
-  }
-
-  const handleSearch = () => {
-    if (requirement.trim()) {
-      // Store the requirement in localStorage to access it on the teams page
-      localStorage.setItem("teamRequirement", requirement)
-      router.push("/teams")
-    } else if (textareaRef.current) {
-      textareaRef.current.focus()
-    }
+  const handleNavigation = () => {
+    router.push('/home-page');
   }
 
   return (
-    <main className="min-h-screen">
-      <div className="absolute top-4 right-4">
-        <ThemeToggle />
-      </div>
+    <div className="relative overflow-hidden">
+      {/* Navbar */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#002C3F] backdrop-blur-md border-b border-gray-100">
+        <div className=" mx-auto px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center space-x-2">
+            <img
+              src="/logo.png"
+              alt="MakeMyTeam Logo"
+              className="h-12 w-auto"
+            />
+          </Link>
+        </div>
+      </nav>
 
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-center text-app-heading mb-8">Team Formation Assistant</h1>
+      <section
+        className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden"
+        ref={heroRef}
+      >
+        <div className="absolute inset-0 pointer-events-none">
+          <ParticleCanvas />
+        </div>
 
-        <Card className="max-w-2xl mx-auto shadow-lg">
-          <CardContent className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Specify Your Team Requirements</h2>
-            <p className="text-muted-foreground mb-6">
-              Use voice input or type to describe the team you need for your upcoming project.
-            </p>
+        <div className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center space-y-12 text-center">
+          <div className="container mx-auto px-6 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={heroInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="space-y-8"
+            >
+              <div className="inline-block">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={heroInView ? { opacity: 1, scale: 1 } : {}}
+                  transition={{ delay: 0.2, duration: 0.5 }}
+                  className="px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full text-sm font-medium text-purple-800 inline-flex items-center"
+                >
+                  <Star className="w-4 h-4 mr-2 text-yellow-500" />
+                  Create your team in minutes
+                </motion.div>
+              </div>
 
-            <div className="mb-6 relative">
-              <textarea
-                ref={textareaRef}
-                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary min-h-[120px]"
-                placeholder="Example: I need a team of frontend developers having 1-3 years of experience"
-                value={requirement}
-                onChange={(e) => setRequirement(e.target.value)}
+              <AnimatedText
+                text="Make My Team"
+                className="text-5xl md:text-7xl font-bold tracking-tight text-gray-900"
+                handwriting={true}
               />
-              <Button
-                onClick={toggleListening}
-                className={`absolute bottom-3 right-3 rounded-full p-2 ${
-                  isListening ? "bg-red-500 hover:bg-red-600" : "bg-primary hover:bg-primary/90"
-                }`}
-                size="icon"
-                type="button"
-              >
-                {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-              </Button>
-            </div>
 
-            <div className="flex justify-end items-center">
-              <Button
-                className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                onClick={handleSearch}
-                disabled={!requirement.trim()}
-              >
-                <Search className="mr-2 h-4 w-4" />
-                Find Teams
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </main>
-  )
+              <AnimatedText
+                text="Find the perfect teammates for your next big project."
+                className="max-w-2xl mx-auto text-xl text-gray-600"
+                delay={0.5}
+              />
+
+              <AnimatedButton delay={1}>
+                <Link href="/home-page">
+                  <Button
+                 
+                    size="lg"
+                    className="px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full text-sm font-medium text-purple-800 inline-flex items-center"
+                  >
+                    Get Started
+                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </Link>
+              </AnimatedButton>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
 }
