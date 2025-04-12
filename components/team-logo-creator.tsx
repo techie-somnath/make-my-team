@@ -44,13 +44,12 @@ export default function TeamLogoCreator(props: any) {
   const [isListening, setIsListening] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [TeamData, SetTeamData] = useState<any | null>(null);
-  const [history, setHistory] = useState<HistoryItem[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { employee, SetEmployees } = useEmployeeData();
+  const { employee, SetEmployees,history,setHistory } = useEmployeeData();
   // Scroll to bottom of messages
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -106,6 +105,7 @@ export default function TeamLogoCreator(props: any) {
   };
 
   const handleSubmit = (e: React.FormEvent) => {
+    handleButtonClick();
     e.preventDefault();
 
     if (prompt.trim()) {
@@ -174,6 +174,7 @@ export default function TeamLogoCreator(props: any) {
   };
 
   console.log("Team Data", employee);
+  console.log("History", history);
   return (
     <div className="flex flex-col h-screen max-h-screen overflow-hidden">
       {/* Header */}
@@ -299,7 +300,8 @@ export default function TeamLogoCreator(props: any) {
                 />
 
                 <button
-                  onClick={handleButtonClick}
+                //   onClick={handleButtonClick}
+                type="submit"
                   disabled={!prompt.trim()}
                   className="p-3 text-gray-500 hover:text-gray-700 focus:outline-none disabled:opacity-50"
                 >

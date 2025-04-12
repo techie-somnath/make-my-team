@@ -13,9 +13,10 @@ const DataContext = createContext<any | undefined>(undefined);
 // Create a provider component
 export const DataProvider = ({ children }: { children: ReactNode }) => {
   const [employee, SetEmployees] = useState<any |null>(null);
+  const [history , setHistory]=useState<any | null>([]);
 
   return (
-    <DataContext.Provider value={{ employee, SetEmployees }}>
+    <DataContext.Provider value={{ employee, SetEmployees, history, setHistory }}>
       {children}
     </DataContext.Provider>
   );
