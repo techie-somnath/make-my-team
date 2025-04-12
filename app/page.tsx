@@ -43,7 +43,7 @@ export default function Home() {
       <DataProvider>
         <div className="relative overflow-hidden">
           {/* Navbar */}
-          {/* <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+          <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
             <div className="container mx-auto px-6 py-4 flex items-center justify-between">
               <Link href="/" className="flex items-center space-x-2">
                 <img
@@ -53,7 +53,7 @@ export default function Home() {
                 />
               </Link>
             </div>
-          </nav> */}
+          </nav>
 
 
 
@@ -123,7 +123,7 @@ export default function Home() {
                         <Button
                           //onClick={handleNavigation}
                           size="lg"
-                          className="px-8 py-2 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full text-xs font-medium text-purple-800 inline-flex items-center"
+                          className="px-8 py-2 bg-[#FFB81C] text-[#0023CA] inline-flex items-center"
                         >
                           Get Started
                           <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -158,7 +158,7 @@ export default function Home() {
                       ))}
                     </div>
                     <span>
-                      Join <b>2,000+</b> teams already formed
+                       <b>2,000+</b> Project teams already formed
                     </span>
                   </motion.div>
                 </motion.div>

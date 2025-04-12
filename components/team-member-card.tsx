@@ -1,7 +1,9 @@
 "use client"
 
 import { DataProvider, useEmployeeData } from "@/app/data-context"
+import { femaleImages, maleImages } from "@/lib/team-data"
 import Link from "next/link"
+
 
 type TeamMember = {
   employeeId: string
@@ -18,7 +20,7 @@ interface TeamMemberCardProps {
   member: TeamMember
 }
 
-export default function TeamMemberCard({ member }: TeamMemberCardProps) {
+export default function TeamMemberCard({ member }: any) {
 
 const {employee} =   useEmployeeData();
 console.log(employee,"this is the employee Data from member card");
@@ -49,6 +51,8 @@ console.log(employee,"this is the employee Data from member card");
     return colors[hash % colors.length]
   }
 
+//   console.log(member ,"data of member");
+
   return (
     <div
       className="bg-white rounded-lg shadow-sm overflow-hidden text-gray-800 flex flex-col md:flex-row w-full max-w-md md:max-w-xl"
@@ -57,11 +61,15 @@ console.log(employee,"this is the employee Data from member card");
         <DataProvider>
       {/* Avatar/Profile Picture */}
       <Link href={`/team-member/${member.employeeId}`} className="flex flex-col md:flex-row w-full">
-        <div className={`${getAvatarColor(member.employeeId)} p-4 flex items-center justify-center`}>
-          <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-white text-xl font-bold">
-            {getInitials(member.name)}
-          </div>
-        </div>
+      <div className={`p-4 flex items-center justify-center`}>
+  <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-white text-xl font-bold overflow-hidden">
+    <img
+      src={member.image}
+      alt={`Avatar`}
+      className="w-full h-full object-cover rounded-full"
+    />
+  </div>
+</div>
 
         {/* Member Details */}
         <div className="p-4 flex-1">
@@ -69,14 +77,9 @@ console.log(employee,"this is the employee Data from member card");
 
           <div className="mt-2 space-y-1">
             <p className="text-sm">
-              <span className="font-semibold">Designation:</span> {member.designation}
+              <span className="font-semibold"></span> {member.designation}
             </p>
-            <p className="text-sm">
-              <span className="font-semibold">Experience:</span> {member.yearsOfExperience} years
-            </p>
-            <p className="text-sm">
-              <span className="font-semibold">Availability:</span> {member.availability}
-            </p>
+          
           </div>
 
           <div className="mt-3">
