@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ParticleCanvas } from "@/components/particle-canvas";
 import AnimatedButton from "@/components/animated-button";
+import { DataProvider } from "./data-context";
 
 export default function Home() {
   const ref = useRef(null);
@@ -38,6 +39,8 @@ export default function Home() {
   const ctaInView = useInView(ctaRef, { once: true, amount: 0.5 });
 
   return (
+    <>
+    <DataProvider>
     <div className="relative overflow-hidden">
       {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
@@ -511,5 +514,7 @@ export default function Home() {
         </div>
       </footer>
     </div>
+    </DataProvider>
+    </>
   );
 }

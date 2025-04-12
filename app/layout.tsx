@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { DataProvider } from "./data-context"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -37,9 +38,13 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icon-192x192.png" />
       </head>
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+      <DataProvider>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+         
           {children}
+        
         </ThemeProvider>
+        </DataProvider>
       </body>
     </html>
   )
@@ -47,4 +52,5 @@ export default function RootLayout({
 
 
 import './globals.css'
-import Navbar from "@/components/navbar"
+
+

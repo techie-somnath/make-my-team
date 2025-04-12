@@ -12,7 +12,7 @@ const Navbar = () => {
             className="h-8 w-auto"
           />
         </Link>
-        <ThemeToggle />
+        {/* <ThemeToggle /> */}
       </div>
     </nav>
   );

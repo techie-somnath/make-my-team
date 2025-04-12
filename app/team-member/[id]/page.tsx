@@ -1,64 +1,126 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Check, X } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { getTeamMemberById, type TeamMemberDetail } from "@/lib/team-data"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Avatar } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Check, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { type TeamMemberDetail } from "@/lib/team-data";
+import { useEmployeeData } from "@/app/data-context";
 
-export default function TeamMemberDetail({ params }: { params: { id: string } }) {
-  const [member, setMember] = useState<TeamMemberDetail | null>(null)
-  const [loading, setLoading] = useState(true)
-  const router = useRouter()
+export default function TeamMemberDetail({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const [member, setMember] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const { employee,SetEmployees  } = useEmployeeData();
+  console.log(employee);
+  const getTeamMemberById = (id: any) => {
+    const employees = [
+      ...employee.currentTeam, // Spread currentTeam
+      ...employee.specializedTeam, // Spread specializedTeam
+    ];
 
+    console.log(employees, "All employees data");
+
+    // Find the team member by ID
+    const teamMember = employees.find((member) => member.employeeId === id);
+
+    // Return the found member or null if not found
+    if (!teamMember) {
+      console.warn(`No team member found with ID: ${id}`);
+      return null;
+    }
+
+    return teamMember;
+  };
   useEffect(() => {
     try {
-      setLoading(true)
-      const id = Number.parseInt(params.id)
+      setLoading(true);
+      const id = params.id;
 
       // Get the member from our stored data to ensure consistency
-      const memberData = getTeamMemberById(id)
+      const memberData = getTeamMemberById(id);
 
       if (memberData) {
-        setMember(memberData)
+        setMember(memberData);
       } else {
-        console.error("Member not found")
+        console.error("Member not found");
       }
     } catch (error) {
-      console.error("Error loading team member:", error)
+      console.error("Error loading team member:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [params.id])
+  }, [params.id]);
 
-  const handleReject = () => {
-    // In a real app, you would update state/context or make an API call
-    const rejectedMembers = JSON.parse(localStorage.getItem("rejectedMembers") || "[]")
-    if (member) {
-      localStorage.setItem("rejectedMembers", JSON.stringify([...rejectedMembers, member.id]))
-    }
-    router.push("/teams")
+
+  function filterRejectedEmployees(employees:any): any {
+    
+    return {
+      currentTeam: employees.currentTeam.filter(member => !member.isRejected),
+      specializedTeam: employees.specializedTeam.filter(member => !member.isRejected),
+    };
   }
 
-  const handleAccept = () => {
-    // In a real app, you would update state/context or make an API call
-    const acceptedMembers = JSON.parse(localStorage.getItem("acceptedMembers") || "[]")
-    if (member) {
-      localStorage.setItem("acceptedMembers", JSON.stringify([...acceptedMembers, member.id]))
-    }
-    router.push("/teams")
-  }
+  const handleReject = (id: string) => {
+    // Update the isRejected field for the employee with the given ID
+    const updatedEmployee = {
+      currentTeam: employee.currentTeam.map((member) =>
+        member.employeeId === id ? { ...member, isRejected: true } : member
+      ),
+      specializedTeam: employee.specializedTeam.map((member) =>
+        member.employeeId === id ? { ...member, isRejected: true } : member
+      ),
+    };
+  
+    console.log("Updated Employee After Reject:", updatedEmployee);
+  
+    // Update the state/context with the modified employees
+    SetEmployees(updatedEmployee);
+  
+    // Navigate to the home page
+    router.push("/home-page");
+  };
+  
+  const handleAccept = (id: string) => {
+    // Update the isRejected field for the employee with the given ID
+    const updatedEmployee = {
+      currentTeam: employee.currentTeam.map((member) =>
+        member.employeeId === id ? { ...member, isRejected: false } : member
+      ),
+      specializedTeam: employee.specializedTeam.map((member) =>
+        member.employeeId === id ? { ...member, isRejected: false } : member
+      ),
+    };
+  
+    console.log("Updated Employee After Accept:", updatedEmployee);
+  
+    // Update the state/context with the modified employees
+    SetEmployees(updatedEmployee);
+  
+    // Navigate to the home page
+    router.push("/home-page");
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
-    )
+    );
   }
 
   if (!member) {
@@ -66,7 +128,7 @@ export default function TeamMemberDetail({ params }: { params: { id: string } })
       <div className="min-h-screen flex items-center justify-center">
         <p>Team member not found</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -76,7 +138,11 @@ export default function TeamMemberDetail({ params }: { params: { id: string } })
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <Button variant="ghost" className="mb-6 flex items-center" onClick={() => router.push("/teams")}>
+        <Button
+          variant="ghost"
+          className="mb-6 flex items-center"
+          onClick={() => router.push("/home-page")}
+        >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Teams
         </Button>
@@ -85,12 +151,20 @@ export default function TeamMemberDetail({ params }: { params: { id: string } })
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               <Avatar className="h-24 w-24">
-                <img src={member.image || "/placeholder.svg"} alt={member.name} />
+                <img
+                  src={member.image || "/placeholder.svg"}
+                  alt={member.name}
+                />
               </Avatar>
             </div>
-            <CardTitle className="text-2xl text-app-heading">{member.name}</CardTitle>
+            <CardTitle className="text-2xl text-app-heading">
+              {member.name}
+            </CardTitle>
             <div className="text-muted-foreground">
-              {member.role} • {member.experience}
+            Designation  {member.designation} 
+            </div>
+            <div className="text-muted-foreground">
+             {member.yearsOfExperience} Years of Experience 
             </div>
           </CardHeader>
 
@@ -112,16 +186,20 @@ export default function TeamMemberDetail({ params }: { params: { id: string } })
             </div>
 
             <div className="mb-6">
-              <h3 className="font-medium mb-2 text-app-heading">Previous Projects</h3>
+              <h3 className="font-medium mb-2 text-app-heading">
+                Previous Projects
+              </h3>
               <ul className="list-disc pl-5">
-                {member.projects.map((project, index) => (
+                {member.pastProjects.map((project, index) => (
                   <li key={index}>{project}</li>
                 ))}
               </ul>
             </div>
 
             <div>
-              <h3 className="font-medium mb-2 text-app-heading">Availability</h3>
+              <h3 className="font-medium mb-2 text-app-heading">
+                Availability
+              </h3>
               <p>{member.availability}</p>
             </div>
           </CardContent>
@@ -130,7 +208,7 @@ export default function TeamMemberDetail({ params }: { params: { id: string } })
             <Button
               variant="outline"
               className="flex items-center text-destructive border-destructive/20 hover:bg-destructive/10"
-              onClick={handleReject}
+              onClick={()=>handleReject(member.employeeId)}
             >
               <X className="mr-2 h-4 w-4" />
               Reject
@@ -138,7 +216,7 @@ export default function TeamMemberDetail({ params }: { params: { id: string } })
 
             <Button
               className="flex items-center bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white"
-              onClick={handleAccept}
+              onClick={()=>handleAccept(member.employeeId)}
             >
               <Check className="mr-2 h-4 w-4" />
               Accept
@@ -147,5 +225,5 @@ export default function TeamMemberDetail({ params }: { params: { id: string } })
         </Card>
       </div>
     </main>
-  )
+  );
 }
